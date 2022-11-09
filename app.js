@@ -91,7 +91,36 @@ class Ruta {
 		}
 		return lista;
 	}
-	//recorrido(baseInicio, horaInicio, minutoInicio, horaFin, minutoFin) {}
+
+	recorrido(baseInicio, horaInicio, minutoInicio, horaFin, minutoFin) {
+		if(this.primero === null) {
+			return "No existen bases registradas."
+		}
+
+		let aux = this.primero;
+		let inicioRecorrido = null;
+		let minutosInicioTransformados = horaInicio*60 + minutoInicio;
+		let minutosFinTransformados = horaFin*60 + minutoFin;
+		let recorridoResumen = "";
+
+		while(aux.sig !== this.primero) {
+			if(aux.getNombre() === baseInicio) {
+				inicioRecorrido = aux;
+			}
+			aux = aux.sig;
+		}
+		
+		while(minutosInicioTransformados + inicioRecorrido.getMinutos() < minutosFinTransformados) {
+			minutosInicioTransformados += inicioRecorrido.getMinutos()
+			recorridoResumen += inicioRecorrido.descripcion()
+			inicioRecorrido = inicioRecorrido.sig;
+		}
+
+		console.log(minutosInicioTransformados)
+		console.log(minutosFinTransformados)
+		return recorridoResumen;
+
+	}
 }
 
 let ruta = new Ruta();
@@ -106,4 +135,4 @@ ruta.agregar(base);
 base = new Base('Sorina', 15);
 ruta.agregar(base);
 //console.log(ruta.eliminar('Hospital'))
-console.log(ruta.imprimir());
+console.log(ruta.recorrido('Rojos', 7, 20, 18, 45));
