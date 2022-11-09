@@ -7,7 +7,7 @@ class Base {
 	}
 
 	descripcion() {
-		return `Nombre: ${this.nombre} - Minutos: ${this.minutos}\n`;
+		return `Base: ${this.nombre} - Duración de trayecto: ${this.minutos}\n`;
 	}
 
 	getNombre() {
@@ -40,7 +40,6 @@ class Ruta {
 			this.primero.ant = nuevo;
 		}
 	}
-
 	buscar(nombre) {
 		if(this.primero === null) {
 			return null;
@@ -58,6 +57,7 @@ class Ruta {
 		}
 		return null;
 	}
+
 	eliminar(nombre) {
 		if(this.primero === null) {
 			return false;
@@ -82,6 +82,7 @@ class Ruta {
 		}
 		return false;
 	}
+
 	imprimir() {
 		let lista = ""
 		let aux = this.primero;
@@ -89,6 +90,7 @@ class Ruta {
 			lista += aux.descripcion()
 			aux = aux.sig;
 		}
+		lista += this.primero.ant.descripcion()
 		return lista;
 	}
 
@@ -101,25 +103,43 @@ class Ruta {
 		let inicioRecorrido = null;
 		let minutosInicioTransformados = horaInicio*60 + minutoInicio;
 		let minutosFinTransformados = horaFin*60 + minutoFin;
-		let recorridoResumen = "";
+		let recorridoResumen = "El recorrido es:\n";
 
-		while(aux.sig !== this.primero) {
-			if(aux.getNombre() === baseInicio) {
-				inicioRecorrido = aux;
+		if(this.primero.ant.getNombre() === baseInicio) {
+			inicioRecorrido = this.primero.ant;
+		} else {
+			while(aux.sig !== this.primero) {
+				if(aux.getNombre() === baseInicio) {
+					inicioRecorrido = aux;
+				}
+				aux = aux.sig;
 			}
-			aux = aux.sig;
+		}
+
+		if(inicioRecorrido === null) {
+			return "No se encontró la base de inicio"
 		}
 		
 		while(minutosInicioTransformados + inicioRecorrido.getMinutos() < minutosFinTransformados) {
-			minutosInicioTransformados += inicioRecorrido.getMinutos()
-			recorridoResumen += inicioRecorrido.descripcion()
+			recorridoResumen += `Hora de llegada: ${this.formatoHora(minutosInicioTransformados)} | ${inicioRecorrido.descripcion()}`;
+			minutosInicioTransformados += inicioRecorrido.getMinutos();
 			inicioRecorrido = inicioRecorrido.sig;
 		}
-
-		console.log(minutosInicioTransformados)
-		console.log(minutosFinTransformados)
 		return recorridoResumen;
+	}
 
+	formatoHora(minutos) {
+		let hora = Math.floor(minutos/60);
+		let minuto = Math.round(((minutos/60) - hora)*60);
+
+		if(hora < 10) {
+			hora = `0${hora}`
+		}
+		if(minuto < 10) {
+			minuto = `0${minuto}`
+		}
+		
+		return `${hora}:${minuto}`
 	}
 }
 
@@ -132,7 +152,9 @@ base = new Base('Hospital', 60);
 ruta.agregar(base);
 base = new Base('Coliman', 20);
 ruta.agregar(base);
-base = new Base('Sorina', 15);
+base = new Base('Soriana', 15);
 ruta.agregar(base);
-//console.log(ruta.eliminar('Hospital'))
-console.log(ruta.recorrido('Rojos', 7, 20, 18, 45));
+ruta.eliminar('Hospital')
+console.log(ruta.buscar('Soriana'));
+console.log(ruta.imprimir())
+console.log(ruta.recorrido('Soriana', 7, 20, 10, 0));
